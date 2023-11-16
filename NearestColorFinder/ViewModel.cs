@@ -19,7 +19,7 @@ namespace NearestColorFinder
 
         public ViewModel()
         {
-            this.Palette = new BindingList<Color>();
+            this.Palette = new BindingList<Color>()
             //{
             //    Colors.LightBlue,
             //    Colors.LightCoral,
@@ -34,11 +34,12 @@ namespace NearestColorFinder
             //    Colors.LightSlateGray,
             //    Colors.LightSteelBlue,
             //    Colors.LightYellow
-            //};
+            //}
+            ;
             this.LoadPalette();
             this.NamedColors = new BindingList<ColorNamePair>(ColorHelper.GetNamedColors().OrderBy(p => p.Name, StringComparer.InvariantCultureIgnoreCase).ToList());
 
-            this.SelectedColor = this.Palette.First();
+            this.SelectedColor = this.Palette.Any() ? this.Palette.First() : Colors.Black;
         }
 
         public BindingList<ColorNamePair> NamedColors { get; }
@@ -124,13 +125,16 @@ namespace NearestColorFinder
 
         private void RefillPalette(IEnumerable<Color> newItems)
         {
-            var list = newItems.ToList();
-            Palette.Clear();
-            foreach (var item in list)
+            if (newItems != null)
             {
-                Palette.Add(item);
+                var list = newItems.ToList();
+                Palette.Clear();
+                foreach (var item in list)
+                {
+                    Palette.Add(item);
+                }
+                this.RaisePropertyChanged(nameof(Palette));
             }
-            this.RaisePropertyChanged(nameof(Palette));
         }
 
         public void SortPaletteByHex()
