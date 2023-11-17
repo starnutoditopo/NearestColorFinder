@@ -123,45 +123,95 @@
             </StackPanel>
         </GroupBox>
 
-        <GroupBox DockPanel.Dock="Top" Margin="5" Header="Closest palette color (RGB)">
-            <StackPanel>
-                <TextBlock Text="{Binding ClosestPaletteColorRgb}" />
-                <TextBlock FontFamily="Consolas" Text="{Binding Path=ClosestPaletteColorRgb, Converter={StaticResource ResourceKey=colorToNameConverter}}" Width="100" Margin="5,0" />
-                <Border 
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition />
+                <RowDefinition />
+            </Grid.RowDefinitions>
+            <GroupBox Grid.Row="0" Grid.Column="0" Margin="5" Header="Closest palette color (RGB)">
+                <StackPanel>
+                    <TextBlock Text="{Binding ClosestPaletteColorRgb}" />
+                    <TextBlock FontFamily="Consolas" Text="{Binding Path=ClosestPaletteColorRgb, Converter={StaticResource ResourceKey=colorToNameConverter}}" Width="100" Margin="5,0" />
+                    <Border 
                     Width="50"    
                     Height="50"
                     BorderThickness="1"
                     BorderBrush="Black"
                     CornerRadius="5" >
-                    <Border.Background>
-                        <SolidColorBrush Color="{Binding Path=ClosestPaletteColorRgb}" />
-                    </Border.Background>
-                </Border>
-                <Button
+                        <Border.Background>
+                            <SolidColorBrush Color="{Binding Path=ClosestPaletteColorRgb}" />
+                        </Border.Background>
+                    </Border>
+                    <Button
                     Click="{e:EventBinding CopyClosestPaletteColorRgb}">Copy</Button>
-            </StackPanel>
-        </GroupBox>
-        <GroupBox Margin="5" Header="Closest named color (RGB)">
-            <StackPanel>
-                <TextBlock Text="{Binding ClosestNamedColorRgb}" />
-                <TextBlock FontFamily="Consolas" Text="{Binding Path=ClosestNamedColorRgb, Converter={StaticResource ResourceKey=colorToNameConverter}}" Width="100" Margin="5,0" />
-                <Border 
+                </StackPanel>
+            </GroupBox>
+            <GroupBox Grid.Row="1" Grid.Column="0" Margin="5" Header="Closest named color (RGB)">
+                <StackPanel>
+                    <TextBlock Text="{Binding ClosestNamedColorRgb}" />
+                    <TextBlock FontFamily="Consolas" Text="{Binding Path=ClosestNamedColorRgb, Converter={StaticResource ResourceKey=colorToNameConverter}}" Width="100" Margin="5,0" />
+                    <Border 
                     Width="50"    
                     Height="50"
                     BorderThickness="1"
                     BorderBrush="Black"
                     CornerRadius="5" >
-                    <Border.Background>
-                        <SolidColorBrush Color="{Binding Path=ClosestNamedColorRgb}" />
-                    </Border.Background>
-                </Border>
-                <Button
-                    Click="{e:EventBinding CopyClosestPaletteColorRgb}">Copy</Button>
-                <Button
+                        <Border.Background>
+                            <SolidColorBrush Color="{Binding Path=ClosestNamedColorRgb}" />
+                        </Border.Background>
+                    </Border>
+                    <Button
+                    Click="{e:EventBinding CopyClosestNamedColorRgb}">Copy</Button>
+                    <Button
                     IsEnabled="{Binding CanAddClosestNamedColorRgbToPalette }"
                     Click="{e:EventBinding AddClosestNamedColorRgbToPalette}">Add to palette</Button>
-            </StackPanel>
-        </GroupBox>
+                </StackPanel>
+            </GroupBox>
+
+            <GroupBox Grid.Row="0" Grid.Column="1" Margin="5" Header="Closest palette color (HSL)">
+                <StackPanel>
+                    <TextBlock Text="{Binding ClosestPaletteColorHsl}" />
+                    <TextBlock FontFamily="Consolas" Text="{Binding Path=ClosestPaletteColorHsl, Converter={StaticResource ResourceKey=colorToNameConverter}}" Width="100" Margin="5,0" />
+                    <Border 
+                    Width="50"    
+                    Height="50"
+                    BorderThickness="1"
+                    BorderBrush="Black"
+                    CornerRadius="5" >
+                        <Border.Background>
+                            <SolidColorBrush Color="{Binding Path=ClosestPaletteColorHsl}" />
+                        </Border.Background>
+                    </Border>
+                    <Button
+                    Click="{e:EventBinding CopyClosestPaletteColorHsl}">Copy</Button>
+                </StackPanel>
+            </GroupBox>
+            <GroupBox Grid.Row="1" Grid.Column="1" Margin="5" Header="Closest named color (HSL)">
+                <StackPanel>
+                    <TextBlock Text="{Binding ClosestNamedColorHsl}" />
+                    <TextBlock FontFamily="Consolas" Text="{Binding Path=ClosestNamedColorHsl, Converter={StaticResource ResourceKey=colorToNameConverter}}" Width="100" Margin="5,0" />
+                    <Border 
+                    Width="50"    
+                    Height="50"
+                    BorderThickness="1"
+                    BorderBrush="Black"
+                    CornerRadius="5" >
+                        <Border.Background>
+                            <SolidColorBrush Color="{Binding Path=ClosestNamedColorHsl}" />
+                        </Border.Background>
+                    </Border>
+                    <Button
+                    Click="{e:EventBinding CopyClosestNamedColorHsl}">Copy</Button>
+                    <Button
+                    IsEnabled="{Binding CanAddClosestNamedColorHslToPalette }"
+                    Click="{e:EventBinding AddClosestNamedColorHslToPalette}">Add to palette</Button>
+                </StackPanel>
+            </GroupBox>
+        </Grid>
 
     </DockPanel>
 </Window>

@@ -74,6 +74,8 @@ namespace NearestColorFinder
                     this.RaisePropertyChanged(nameof(ClosestNamedColorHsl));
                     this.RaisePropertyChanged(nameof(CanAddSelectedColorToPalette));
                     this.RaisePropertyChanged(nameof(CanAddClosestNamedColorRgbToPalette));
+                    this.RaisePropertyChanged(nameof(CanAddClosestNamedColorHslToPalette));
+
                 }
             }
         }
@@ -102,49 +104,30 @@ namespace NearestColorFinder
             }
         }
 
-        public Color ClosestPaletteColorRgb
-        {
-            get
-            {
-                int id = ColorHelper.GetClosestColorByRgb(this.Palette, this.SelectedColor);
-                return this.Palette[id];
-            }
-        }
-        public Color ClosestNamedColorRgb
-        {
-            get
-            {
-                int id = ColorHelper.GetClosestColorByRgb(this.NamedColors.Select(p=>p.Color), this.SelectedColor);
-                return this.NamedColors[id].Color;
-            }
-        }
-        
-
-        public Color ClosestPaletteColorHsl
-        {
-            get
-            {
-                int id = ColorHelper.GetClosestColorByHsl(this.Palette, this.SelectedColor);
-                return this.Palette[id];
-            }
-        }
-        public Color ClosestNamedColorHsl
-        {
-            get
-            {
-                int id = ColorHelper.GetClosestColorByHsl(this.NamedColors.Select(p => p.Color), this.SelectedColor);
-                return this.NamedColors[id].Color;
-            }
-        }
+        public Color ClosestPaletteColorRgb => ColorHelper.GetClosestColorsByRgb(this.Palette, this.SelectedColor).First();
+        public Color ClosestNamedColorRgb => ColorHelper.GetClosestColorsByRgb(this.NamedColors.Select(p => p.Color), this.SelectedColor).First();
+        public Color ClosestPaletteColorHsl => ColorHelper.GetClosestColorsByHsl(this.Palette, this.SelectedColor).First();
+        public Color ClosestNamedColorHsl => ColorHelper.GetClosestColorsByHsl(this.NamedColors.Select(p => p.Color), this.SelectedColor).First();
 
         public void CopyClosestPaletteColorRgb()
         {
             var name = colorToNameConverter.Convert(ClosestPaletteColorRgb, typeof(string), null, CultureInfo.InvariantCulture) as string;
             Clipboard.SetText(name);
         }
+        public void CopyClosestPaletteColorHsl()
+        {
+            var name = colorToNameConverter.Convert(ClosestPaletteColorHsl, typeof(string), null, CultureInfo.InvariantCulture) as string;
+            Clipboard.SetText(name);
+        }
+
         public void CopyClosestNamedColorRgb()
         {
             var name = colorToNameConverter.Convert(ClosestNamedColorRgb, typeof(string), null, CultureInfo.InvariantCulture) as string;
+            Clipboard.SetText(name);
+        }
+        public void CopyClosestNamedColorHsl()
+        {
+            var name = colorToNameConverter.Convert(ClosestNamedColorHsl, typeof(string), null, CultureInfo.InvariantCulture) as string;
             Clipboard.SetText(name);
         }
 
@@ -184,24 +167,14 @@ namespace NearestColorFinder
                 this.Palette.Remove((Color)o);
                 this.RaisePropertyChanged(nameof(CanAddSelectedColorToPalette));
                 this.RaisePropertyChanged(nameof(CanAddClosestNamedColorRgbToPalette));
+                this.RaisePropertyChanged(nameof(CanAddClosestNamedColorHslToPalette));
                 this.RaisePropertyChanged(nameof(Palette));
             }
         }
 
-        public bool CanAddSelectedColorToPalette
-        {
-            get
-            {
-                return !this.Palette.Contains(this.SelectedColor);
-            }
-        }
-        public bool CanAddClosestNamedColorRgbToPalette
-        {
-            get
-            {
-                return !this.Palette.Contains(this.ClosestNamedColorRgb);
-            }
-        }
+        public bool CanAddSelectedColorToPalette => !this.Palette.Contains(this.SelectedColor);
+        public bool CanAddClosestNamedColorRgbToPalette => !this.Palette.Contains(this.ClosestNamedColorRgb);
+        public bool CanAddClosestNamedColorHslToPalette => !this.Palette.Contains(this.ClosestNamedColorHsl);
 
         public void AddSelectedColorToPalette()
         {
@@ -210,6 +183,7 @@ namespace NearestColorFinder
                 this.Palette.Add(this.SelectedColor);
                 this.RaisePropertyChanged(nameof(CanAddSelectedColorToPalette));
                 this.RaisePropertyChanged(nameof(CanAddClosestNamedColorRgbToPalette));
+                this.RaisePropertyChanged(nameof(CanAddClosestNamedColorHslToPalette));
                 this.RaisePropertyChanged(nameof(Palette));
             }
         }
@@ -218,9 +192,21 @@ namespace NearestColorFinder
         {
             if (CanAddClosestNamedColorRgbToPalette)
             {
-                this.Palette.Add(this.SelectedColor);
+                this.Palette.Add(this.ClosestNamedColorRgb);
                 this.RaisePropertyChanged(nameof(CanAddSelectedColorToPalette));
                 this.RaisePropertyChanged(nameof(CanAddClosestNamedColorRgbToPalette));
+                this.RaisePropertyChanged(nameof(CanAddClosestNamedColorHslToPalette));
+                this.RaisePropertyChanged(nameof(Palette));
+            }
+        }
+        public void AddClosestNamedColorHslToPalette()
+        {
+            if (CanAddClosestNamedColorHslToPalette)
+            {
+                this.Palette.Add(this.ClosestNamedColorHsl);
+                this.RaisePropertyChanged(nameof(CanAddSelectedColorToPalette));
+                this.RaisePropertyChanged(nameof(CanAddClosestNamedColorRgbToPalette));
+                this.RaisePropertyChanged(nameof(CanAddClosestNamedColorHslToPalette));
                 this.RaisePropertyChanged(nameof(Palette));
             }
         }
