@@ -31,20 +31,19 @@ namespace NearestColorFinder.Helpers
             _namedColors = colorNames.AsReadOnly();
         }
 
-        // closed match for hues only:
-        public static int GetClosestColorByHue(IEnumerable<Color> colors, Color target)
+        // closed match in RGB space
+        public static int GetClosestColorByRgb(IEnumerable<Color> colors, Color target)
         {
-            var hue1 = target.GetHue();
-            var diffs = colors.Select(n => getHueDistance(n.GetHue(), hue1));
-            var diffMin = diffs.Min(n => n);
-            return diffs.ToList().FindIndex(n => n == diffMin);
+            var colorDiffs = colors.Select(n => GetRgbDiff(n, target)).Min(n => n);
+            var result = colors.ToList().FindIndex(n => GetRgbDiff(n, target) == colorDiffs);
+            return result;
         }
 
-        // closed match in RGB space
-        public static int GetClosestColorByRGB(IEnumerable<Color> colors, Color target)
+        // closed match in HSL space
+        public static int GetClosestColorByHsl(IEnumerable<Color> colors, Color target)
         {
-            var colorDiffs = colors.Select(n => ColorDiff(n, target)).Min(n => n);
-            return colors.ToList().FindIndex(n => ColorDiff(n, target) == colorDiffs);
+            var colorDiffs = colors.Select(n => GetHslDiff(n, target)).Min(n => n);
+            return colors.ToList().FindIndex(n => GetHslDiff(n, target) == colorDiffs);
         }
 
         //// weighed distance using hue, saturation and brightness
@@ -63,20 +62,21 @@ namespace NearestColorFinder.Helpers
         //{ return (c.R * 0.299f + c.G * 0.587f + c.B * 0.114f) / 256f; }
 
         // distance between two hues:
-        private static double getHueDistance(double hue1, double hue2)
+        private static double GetHueDistance(double hue1, double hue2)
         {
             double d = Math.Abs(hue1 - hue2); return d > 180 ? 360 - d : d;
         }
 
-        ////  weighed only by saturation and brightness (from my trackbars)
-        //public static double ColorNum(Color c)
-        //{
-        //    return c.GetSaturation() * factorSat +
-        //                                      getBrightness(c) * factorBri;
-        //}
+        private static int GetHslDiff(Color c1, Color c2)
+        {
+            var h = GetHueDistance(c1.GetHue(), c2.GetHue());
+            return (int)Math.Sqrt(h * h
+                                 + (c1.GetSaturation() - c2.GetSaturation()) * (c1.GetSaturation() - c2.GetSaturation())
+                                 + (c1.GetLuminance() - c2.GetLuminance()) * (c1.GetLuminance() - c2.GetLuminance()));
+        }
 
         // distance in RGB space
-        private static int ColorDiff(Color c1, Color c2)
+        private static int GetRgbDiff(Color c1, Color c2)
         {
             return (int)Math.Sqrt((c1.R - c2.R) * (c1.R - c2.R)
                                  + (c1.G - c2.G) * (c1.G - c2.G)

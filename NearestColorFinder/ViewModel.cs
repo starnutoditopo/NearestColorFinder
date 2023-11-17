@@ -68,9 +68,12 @@ namespace NearestColorFinder
                 {
                     this._selectedColor = value;
                     this.RaisePropertyChanged(nameof(SelectedColor));
-                    this.RaisePropertyChanged(nameof(ClosestPaletteColorRGB));
-                    this.RaisePropertyChanged(nameof(ClosestPaletteColorHue));
+                    this.RaisePropertyChanged(nameof(ClosestPaletteColorRgb));
+                    this.RaisePropertyChanged(nameof(ClosestPaletteColorHsl));
+                    this.RaisePropertyChanged(nameof(ClosestNamedColorRgb));
+                    this.RaisePropertyChanged(nameof(ClosestNamedColorHsl));
                     this.RaisePropertyChanged(nameof(CanAddSelectedColorToPalette));
+                    this.RaisePropertyChanged(nameof(CanAddClosestNamedColorRgbToPalette));
                 }
             }
         }
@@ -99,27 +102,49 @@ namespace NearestColorFinder
             }
         }
 
-        public Color ClosestPaletteColorRGB
+        public Color ClosestPaletteColorRgb
         {
             get
             {
-                int id = ColorHelper.GetClosestColorByRGB(this.Palette, this.SelectedColor);
+                int id = ColorHelper.GetClosestColorByRgb(this.Palette, this.SelectedColor);
                 return this.Palette[id];
             }
         }
-
-        public Color ClosestPaletteColorHue
+        public Color ClosestNamedColorRgb
         {
             get
             {
-                int id = ColorHelper.GetClosestColorByHue(this.Palette, this.SelectedColor);
+                int id = ColorHelper.GetClosestColorByRgb(this.NamedColors.Select(p=>p.Color), this.SelectedColor);
+                return this.NamedColors[id].Color;
+            }
+        }
+        
+
+        public Color ClosestPaletteColorHsl
+        {
+            get
+            {
+                int id = ColorHelper.GetClosestColorByHsl(this.Palette, this.SelectedColor);
                 return this.Palette[id];
             }
         }
-
-        public void CopyClosestPaletteColorRGB()
+        public Color ClosestNamedColorHsl
         {
-            var name = colorToNameConverter.Convert(ClosestPaletteColorRGB, typeof(string), null, CultureInfo.InvariantCulture) as string;
+            get
+            {
+                int id = ColorHelper.GetClosestColorByHsl(this.NamedColors.Select(p => p.Color), this.SelectedColor);
+                return this.NamedColors[id].Color;
+            }
+        }
+
+        public void CopyClosestPaletteColorRgb()
+        {
+            var name = colorToNameConverter.Convert(ClosestPaletteColorRgb, typeof(string), null, CultureInfo.InvariantCulture) as string;
+            Clipboard.SetText(name);
+        }
+        public void CopyClosestNamedColorRgb()
+        {
+            var name = colorToNameConverter.Convert(ClosestNamedColorRgb, typeof(string), null, CultureInfo.InvariantCulture) as string;
             Clipboard.SetText(name);
         }
 
@@ -137,14 +162,14 @@ namespace NearestColorFinder
             }
         }
 
-        public void SortPaletteByHex()
+        public void SortPaletteByRgb()
         {
-            RefillPalette(this.Palette.OrderBy(c => c.ToString(CultureInfo.InvariantCulture)));
+            RefillPalette(this.Palette.OrderBy(c => c.R).ThenBy(c => c.G).ThenBy(c => c.B));
         }
 
-        public void SortPaletteByHue()
+        public void SortPaletteByHsl()
         {
-            RefillPalette(this.Palette.OrderBy(c => c.GetHue()));
+            RefillPalette(this.Palette.OrderBy(c => c.GetHue()).ThenBy(c => c.GetSaturation()).ThenBy(c => c.GetLuminance()));
         }
 
         public void SortPaletteByName()
@@ -157,9 +182,10 @@ namespace NearestColorFinder
             if (o is Color)
             {
                 this.Palette.Remove((Color)o);
+                this.RaisePropertyChanged(nameof(CanAddSelectedColorToPalette));
+                this.RaisePropertyChanged(nameof(CanAddClosestNamedColorRgbToPalette));
+                this.RaisePropertyChanged(nameof(Palette));
             }
-            this.RaisePropertyChanged(nameof(CanAddSelectedColorToPalette));
-            this.RaisePropertyChanged(nameof(Palette));
         }
 
         public bool CanAddSelectedColorToPalette
@@ -169,14 +195,34 @@ namespace NearestColorFinder
                 return !this.Palette.Contains(this.SelectedColor);
             }
         }
+        public bool CanAddClosestNamedColorRgbToPalette
+        {
+            get
+            {
+                return !this.Palette.Contains(this.ClosestNamedColorRgb);
+            }
+        }
+
         public void AddSelectedColorToPalette()
         {
             if (CanAddSelectedColorToPalette)
             {
                 this.Palette.Add(this.SelectedColor);
+                this.RaisePropertyChanged(nameof(CanAddSelectedColorToPalette));
+                this.RaisePropertyChanged(nameof(CanAddClosestNamedColorRgbToPalette));
+                this.RaisePropertyChanged(nameof(Palette));
             }
-            this.RaisePropertyChanged(nameof(CanAddSelectedColorToPalette));
-            this.RaisePropertyChanged(nameof(Palette));
+        }
+
+        public void AddClosestNamedColorRgbToPalette()
+        {
+            if (CanAddClosestNamedColorRgbToPalette)
+            {
+                this.Palette.Add(this.SelectedColor);
+                this.RaisePropertyChanged(nameof(CanAddSelectedColorToPalette));
+                this.RaisePropertyChanged(nameof(CanAddClosestNamedColorRgbToPalette));
+                this.RaisePropertyChanged(nameof(Palette));
+            }
         }
 
         public void SavePalette()

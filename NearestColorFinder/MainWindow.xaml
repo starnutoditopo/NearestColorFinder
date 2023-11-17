@@ -40,11 +40,11 @@
                 <StackPanel Orientation="Horizontal">
                     <Button
                         Width="25"
-                        Click="{e:EventBinding SortPaletteByHex}"
+                        Click="{e:EventBinding SortPaletteByRgb}"
                         ToolTip="Sort by hex code">↑#</Button>
                     <Button
                         Width="25"
-                        Click="{e:EventBinding SortPaletteByHue}"
+                        Click="{e:EventBinding SortPaletteByHsl}"
                         ToolTip="Sort by hue">↑H</Button>
                     <Button
                         Width="25"
@@ -108,8 +108,8 @@
             <StackPanel>
                 <TextBlock Text="{Binding SelectedColor}" />
                 <Border 
-                    Width="100"    
-                    Height="100"
+                    Width="50"    
+                    Height="50"
                     BorderThickness="1"
                     BorderBrush="Black"
                     CornerRadius="5" >
@@ -123,22 +123,43 @@
             </StackPanel>
         </GroupBox>
 
-        <GroupBox Margin="5" Header="Closest palette color (RGB)">
+        <GroupBox DockPanel.Dock="Top" Margin="5" Header="Closest palette color (RGB)">
             <StackPanel>
-                <TextBlock Text="{Binding ClosestPaletteColorRGB}" />
-                <TextBlock FontFamily="Consolas" Text="{Binding Path=ClosestPaletteColorRGB, Converter={StaticResource ResourceKey=colorToNameConverter}}" Width="100" Margin="5,0" />
+                <TextBlock Text="{Binding ClosestPaletteColorRgb}" />
+                <TextBlock FontFamily="Consolas" Text="{Binding Path=ClosestPaletteColorRgb, Converter={StaticResource ResourceKey=colorToNameConverter}}" Width="100" Margin="5,0" />
                 <Border 
-                    Width="100"    
-                    Height="100"
+                    Width="50"    
+                    Height="50"
                     BorderThickness="1"
                     BorderBrush="Black"
                     CornerRadius="5" >
                     <Border.Background>
-                        <SolidColorBrush Color="{Binding Path=ClosestPaletteColorRGB}" />
+                        <SolidColorBrush Color="{Binding Path=ClosestPaletteColorRgb}" />
                     </Border.Background>
                 </Border>
                 <Button
-                    Click="{e:EventBinding CopyClosestPaletteColorRGB}">Copy</Button>
+                    Click="{e:EventBinding CopyClosestPaletteColorRgb}">Copy</Button>
+            </StackPanel>
+        </GroupBox>
+        <GroupBox Margin="5" Header="Closest named color (RGB)">
+            <StackPanel>
+                <TextBlock Text="{Binding ClosestNamedColorRgb}" />
+                <TextBlock FontFamily="Consolas" Text="{Binding Path=ClosestNamedColorRgb, Converter={StaticResource ResourceKey=colorToNameConverter}}" Width="100" Margin="5,0" />
+                <Border 
+                    Width="50"    
+                    Height="50"
+                    BorderThickness="1"
+                    BorderBrush="Black"
+                    CornerRadius="5" >
+                    <Border.Background>
+                        <SolidColorBrush Color="{Binding Path=ClosestNamedColorRgb}" />
+                    </Border.Background>
+                </Border>
+                <Button
+                    Click="{e:EventBinding CopyClosestPaletteColorRgb}">Copy</Button>
+                <Button
+                    IsEnabled="{Binding CanAddClosestNamedColorRgbToPalette }"
+                    Click="{e:EventBinding AddClosestNamedColorRgbToPalette}">Add to palette</Button>
             </StackPanel>
         </GroupBox>
 
